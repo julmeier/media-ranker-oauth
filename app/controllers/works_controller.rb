@@ -22,9 +22,9 @@ class WorksController < ApplicationController
   def create
     @work = Work.new(media_params)
     @media_category = @work.category
+    @work.user_id = session[:user_id]
 
     if @work.save
-      @work.user_id = sessions[:user_id]
       flash[:status] = :success
       flash[:result_text] = "Successfully created #{@media_category.singularize} #{@work.id}"
       redirect_to work_path(@work)

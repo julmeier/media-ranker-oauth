@@ -13,6 +13,7 @@
 
 <article class="voting-users columns large-6 small-12">
   <h3><%= @votes.count %> Votes for this <%= @media_category.capitalize.singularize %></h3>
+  <h2>Work added by User #<%=@work.user_id%> <%=@work.user.username%></h2>
   <table>
     <thead>
       <tr>
