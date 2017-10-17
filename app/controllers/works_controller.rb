@@ -4,6 +4,7 @@ class WorksController < ApplicationController
   before_action :category_from_work, except: [:root, :index, :new, :create]
 
   def root
+    # @login_user = User.find_by(id: session[:user_id])
     @albums = Work.best_albums
     @books = Work.best_books
     @movies = Work.best_movies
@@ -21,7 +22,9 @@ class WorksController < ApplicationController
   def create
     @work = Work.new(media_params)
     @media_category = @work.category
+
     if @work.save
+      @work.user_id = sessions[:user_id]
       flash[:status] = :success
       flash[:result_text] = "Successfully created #{@media_category.singularize} #{@work.id}"
       redirect_to work_path(@work)
@@ -37,9 +40,11 @@ class WorksController < ApplicationController
     @votes = @work.votes.order(created_at: :desc)
   end
 
+  #only the user who created the work can edit
   def edit
   end
 
+  #only the user who created the work can update
   def update
     @work.update_attributes(media_params)
     if @work.save
