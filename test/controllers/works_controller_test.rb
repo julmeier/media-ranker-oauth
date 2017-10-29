@@ -136,6 +136,19 @@ describe WorksController do
       get edit_work_path(bogus_work_id)
       must_respond_with :not_found
     end
+
+    #NB Added by Julia
+    it "only allows editing by the work's owner" do
+      user = users(:dan)
+      # login(user, :github)
+      #post login_path, params: { username: user.username }
+      new_work = Work.new
+      new_work.title = "Much Ado About Nothing"
+      new_work.creator = "Shakespeare"
+      new_work.category = "album"
+
+
+    end
   end
 
   describe "update" do
@@ -177,6 +190,11 @@ describe WorksController do
   end
 
   describe "destroy" do
+    #NB Added by Julia
+    it "a work can only be deleted by the person who created it" do
+
+    end
+
     it "succeeds for an extant work ID" do
       work_id = Work.first.id
 

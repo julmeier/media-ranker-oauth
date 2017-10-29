@@ -28,15 +28,35 @@ describe User do
 
     it "requires a unique username" do
       username = "test username"
-      user1 = User.new(username: username)
+      user1 = User.new(username: username, uid: 500, provider: "github")
 
       # This must go through, so we use create!
       user1.save!
 
-      user2 = User.new(username: username)
+      user2 = User.new(username: username, uid: 600, provider: "github")
       result = user2.save
       result.must_equal false
       user2.errors.messages.must_include :username
+    end
+
+    it "requires a uid and a provider for logged in users" do
+      username = "test username"
+      user1 = User.new(username: username)
+      user1.valid?.must_equal false
+      user1.uid = 500
+      user1.provider = "github"
+      user1.save
+      user1.valid?.must_equal true
+    end
+
+    it "requires that the uid and provider combination is unique" do
+      user1 = User.create(username: "test_username1", uid: 500, provider: "github")
+      user1.valid?.must_equal true
+      user2 = User.create(username: "test_username2", uid: 500, provider: "google")
+      user2.valid?.must_equal true
+      user3 = User.new(username: "test_username3", uid: 500, provider: "github")
+      user3.valid?.must_equal false
+      proc { user3 = User.create!(username: "test_username3", uid: 500, provider: "github")}.must_raise ActiveRecord::RecordInvalid
     end
 
 

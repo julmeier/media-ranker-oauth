@@ -1,7 +1,14 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
+#NB Julia updated fixtures to include emails, uids, and providers
 dan:
   username: dan
+  email: dan@dan.com
+  uid: 100
+  provider: github
 
 kari:
   username: kari
+  email: kari@kari.com
+  uid: 300
+  provider: github

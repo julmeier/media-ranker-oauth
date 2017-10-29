@@ -6,21 +6,23 @@ mariner:
   description: Collaboration w/ Julie Christmas
   publication_year: 2016-04-08
   category: album
+  user_id: dan
 
 thrill:
   title: Can't Buy a Thrill
   creator: Steely Dan
   description: Dark, cryptic lyrics and catchy 70s hooks!
   publication_year: 1972-11-01
-  category: album
+  category:
 
 poodr:
   title: Practical Object Oriented Design in Ruby
   creator: Sandi Metz
   description: programming!
   publication_year: 2012
-  category: book
+  category:
 
 movie:
   title: test movie - has only required fields
   category: movie
+  user_id: kari

@@ -10,6 +10,8 @@ class Work < ApplicationRecord
   validates :title, presence: true,
                     uniqueness: { scope: :category }
 
+  validates :user_id, presence: true
+
   # This is called a model filter, and is very similar to a controller filter.
   # We want to fixup the category *before* we validate, because
   # our validations are rather strict about what's OK.
