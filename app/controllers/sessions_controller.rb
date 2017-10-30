@@ -53,7 +53,7 @@ class SessionsController < ApplicationController
 					flash[:success] = "Welcome #{@user.username}"
           redirect_to root_path
 				else
-					flash[:error] = "Unable to save user!"
+					flash[:error] = "Unable to save user! Invalid authentication. You may be missing a data field."
           redirect_to root_path
 				end
 

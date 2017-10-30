@@ -13,14 +13,16 @@ thrill:
   creator: Steely Dan
   description: Dark, cryptic lyrics and catchy 70s hooks!
   publication_year: 1972-11-01
-  category:
+  category: album
+  user_id: dan
 
 poodr:
   title: Practical Object Oriented Design in Ruby
   creator: Sandi Metz
   description: programming!
   publication_year: 2012
-  category:
+  category: book
+  user_id: kari
 
 movie:
   title: test movie - has only required fields

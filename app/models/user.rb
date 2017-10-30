@@ -1,6 +1,6 @@
 class User < ApplicationRecord
-  has_many :votes
-  has_many :works
+  has_many :votes, :dependent => :delete_all
+  has_many :works, :dependent => :delete_all
   has_many :ranked_works, through: :votes, source: :work
 
   validates :username, uniqueness: true, presence: true
