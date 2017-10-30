@@ -16,6 +16,20 @@ class Work < ApplicationRecord
   # We want to fixup the category *before* we validate, because
   # our validations are rather strict about what's OK.
   before_validation :fix_category
+  # validates :can_edit_or_delete_work?
+
+
+  #only the person that created the work can edit or delete it
+  def can_edit_or_delete_work?(user_id)
+    if self.user_id.to_i == user_id.to_i
+      puts "******this user created this work*****"
+      return true
+    else
+      errors.add(:user, "Only the person that added the work to the database can edit or delete that work.")
+      puts "this person cannot edit or delete the work"
+      return false
+    end
+  end
 
   def self.to_category_hash
     data = {}

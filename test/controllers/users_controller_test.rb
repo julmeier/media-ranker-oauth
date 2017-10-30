@@ -106,12 +106,15 @@ describe UsersController do
 
   describe "users that are not logged in (guests)" do
       it "does not allow guests to view the user-show" do
-        get 
-
+        get user_path(users(:kari).id)
+        must_redirect_to root_path
+        flash[:result_text].must_equal "You must be logged in to do that"
       end
 
       it "does not allow guests to view the users-index page" do
-
+        get users_path
+        must_redirect_to root_path
+        flash[:result_text].must_equal "You must be logged in to do that"
       end
 
   end

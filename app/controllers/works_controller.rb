@@ -42,50 +42,76 @@ class WorksController < ApplicationController
 
   #only the user who created the work can edit
   def edit
+    unless @work.can_edit_or_delete_work?(session[:user_id])
+      redirect_to work_path(@work.id)
+      flash[:result_text] = "Only the person that added the work can edit or delete it"
+    end
   end
 
   #only the user who created the work can update
   def update
-    @work.update_attributes(media_params)
-    if @work.save
-      flash[:status] = :success
-      flash[:result_text] = "Successfully updated #{@media_category.singularize} #{@work.id}"
-      redirect_to work_path(@work)
+    # puts "BEFORE LOGIC****"
+    # ap params
+    # puts "@work.user: #{@work.user}"
+    # puts "params[:id]: #{params[:id]}"
+    # puts "BEFORE LOGIC****"
+    unless @work.can_edit_or_delete_work?(session[:user_id])
+      # puts "unless****************"
+      # puts @work.can_edit_or_delete_work?(params[:user_id])
+      redirect_to work_path(@work.id)
+      flash[:result_text] = "Only the person that added the work can edit or delete it"
+      # puts "unless****************"
     else
-      flash.now[:status] = :failure
-      flash.now[:result_text] = "Could not update #{@media_category.singularize}"
-      flash.now[:messages] = @work.errors.messages
-      render :edit, status: :not_found
+      @work.update_attributes(media_params)
+      if @work.save
+        puts "SAVED!"
+        flash[:status] = :success
+        flash[:result_text] = "Successfully updated #{@media_category.singularize} #{@work.id}"
+        redirect_to work_path(@work.id)
+      else
+        puts "@work not saved****************"
+        ap @work
+        puts "@work not saved****************"
+        flash.now[:status] = :failure
+        flash.now[:result_text] = "Could not update #{@media_category.singularize}"
+        flash.now[:messages] = @work.errors.messages
+        render :edit, status: :not_found
+      end
     end
   end
 
   def destroy
-    @work.destroy
-    flash[:status] = :success
-    flash[:result_text] = "Successfully destroyed #{@media_category.singularize} #{@work.id}"
-    redirect_to root_path
+    if @work.can_edit_or_delete_work?(session[:user_id])
+      @work.destroy
+      flash[:status] = :success
+      flash[:result_text] = "Successfully destroyed #{@media_category.singularize} #{@work.title}"
+      redirect_to root_path
+    else
+      flash.now[:status] = :failure
+      flash.now[:result_text] = "Could not delete the work #{@work.title}"
+      redirect_to work_path(@work.id)
+    end
   end
 
   def upvote
-    # Most of these varied paths end in failure
-    # Something tragically beautiful about the whole thing
-    # For status codes, see
-    # http://stackoverflow.com/questions/3825990/http-response-code-for-post-when-resource-already-exists
-    flash[:status] = :failure
-    if @login_user
-      vote = Vote.new(user: @login_user, work: @work)
-      if vote.save
-        flash[:status] = :success
-        flash[:result_text] = "Successfully upvoted!"
-        status = :found
-      else
-        flash[:result_text] = "Could not upvote"
-        flash[:messages] = vote.errors.messages
-        status = :conflict
-      end
+    if @work.can_edit_or_delete_work?(session[:user_id])
+      flash[:result_text] = "You cannot vote on your own works"
     else
-      flash[:result_text] = "You must log in to do that"
-      status = :unauthorized
+      if @login_user
+        vote = Vote.new(user: @login_user, work: @work)
+        if vote.save
+          flash[:status] = :success
+          flash[:result_text] = "Successfully upvoted!"
+          status = :found
+        else
+          flash[:result_text] = "Could not upvote"
+          flash[:messages] = vote.errors.messages
+          status = :conflict
+        end
+      else
+        flash[:result_text] = "You must log in to do that"
+        status = :unauthorized
+      end
     end
 
     # Refresh the page to show either the updated vote count
