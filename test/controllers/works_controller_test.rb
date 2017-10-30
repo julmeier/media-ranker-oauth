@@ -229,20 +229,28 @@ describe WorksController do
       Work.find_by(id: work_id).valid?.must_equal true
     end
 
-    it "renders 404 not_found and does not update the DB for a bogus work ID" do
+    #QUESTION from Julia. I'm not sure how to test for this 404 code. The error is:
+    #Expected response to be a <404: missing>, but was a <302: Found> redirect to <http://www.example.com/>. See question below.
+    it "regardless of user sign-in status: renders 404 not_found and does not update the DB for a bogus work ID" do
       start_count = Work.count
-
       bogus_work_id = Work.last.id + 1
       delete work_path(bogus_work_id)
+
       must_respond_with :not_found
 
       Work.count.must_equal start_count
     end
+
   end
 
   describe "upvote" do
 
+
+    #QUESTION from Julia: The error for the below test is:
+    # Expected response to be a <401: unauthorized>, but was a <302: Found> redirect to <http://www.example.com/>.
+    #This makes sense, because the before_action in the application controller redirects the user to the root_path if there is no logged in user. Should the test be changed to account for this. How do you test the 401 unauthorized?
     it "returns 401 unauthorized if no user is logged in" do
+      work = works(:mariner)
       start_vote_count = work.votes.count
       post upvote_path(work)
       must_respond_with :unauthorized
