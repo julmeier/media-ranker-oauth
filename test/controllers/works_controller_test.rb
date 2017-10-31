@@ -134,7 +134,7 @@ describe WorksController do
     it "succeeds for an extant work ID, for the user that created the work" do
       login(users(:dan))
       #dan created the first work in the yml file
-      get edit_work_path(Work.first)
+      get edit_work_path(works(:mariner))
       must_respond_with :success
     end
 
@@ -184,13 +184,12 @@ describe WorksController do
     end
 
     it "renders bad_request for bogus data" do
-      work = Work.first
+      work = works(:poodr)
       work_data = {
         work: {
           title: ""
         }
       }
-
       patch work_path(work), params: work_data
       must_respond_with :not_found
 
@@ -236,8 +235,7 @@ describe WorksController do
       bogus_work_id = Work.last.id + 1
       delete work_path(bogus_work_id)
 
-      must_respond_with :not_found
-
+      must_redirect_to root_path
       Work.count.must_equal start_count
     end
 
@@ -249,50 +247,50 @@ describe WorksController do
     #QUESTION from Julia: The error for the below test is:
     # Expected response to be a <401: unauthorized>, but was a <302: Found> redirect to <http://www.example.com/>.
     #This makes sense, because the before_action in the application controller redirects the user to the root_path if there is no logged in user. Should the test be changed to account for this. How do you test the 401 unauthorized?
-    it "returns 401 unauthorized if no user is logged in" do
+    it "if no user is logged in" do
       work = works(:mariner)
       start_vote_count = work.votes.count
       post upvote_path(work)
-      must_respond_with :unauthorized
+      must_redirect_to root_path
 
       work.votes.count.must_equal start_vote_count
     end
 
-    it "returns 401 unauthorized after the user has logged out" do
+    it "returns after the user has logged out" do
       start_vote_count = works(:mariner).votes.count
 
       # login(users(:dan))
       # logout
 
       post upvote_path(works(:mariner))
-      must_respond_with :unauthorized
+      must_redirect_to root_path
 
       works((:mariner).id).votes.count.must_equal start_vote_count
     end
 
     it "succeeds for a logged-in user and a fresh user-vote pair" do
-      start_vote_count = work.votes.count
+      start_vote_count = works(:poodr).votes.count
 
       login(users(:dan))
 
-      post upvote_path(work)
+      post upvote_path(works(:poodr))
       # Should be a redirect_back
       must_respond_with :redirect
 
-      work.reload
-      work.votes.count.must_equal start_vote_count + 1
+      works(:poodr).reload
+      works(:poodr).votes.count.must_equal start_vote_count + 1
     end
 
     it "returns 409 conflict if the user has already voted for that work" do
-      login
-      Vote.create!(user: user, work: work)
+      login(users(:dan))
+      Vote.create!(user: users(:dan), work: works(:poodr))
 
-      start_vote_count = work.votes.count
+      start_vote_count = works(:poodr).votes.count
 
-      post upvote_path(work)
+      post upvote_path(works(:poodr))
       must_respond_with :conflict
 
-      work.votes.count.must_equal start_vote_count
+      works(:poodr).votes.count.must_equal start_vote_count
     end
   end
 end
